@@ -21,7 +21,6 @@
     pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
     # pip install numpy pandas gensim scipy scikit-learn sklearn_crfsuite nltk matplotlib seaborn tqdm
     pip install -r requirements.txt
-    python -m spacy download en_core_web_sm
 ```
 
 ### CPU Only
