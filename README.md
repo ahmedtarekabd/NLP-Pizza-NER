@@ -19,7 +19,7 @@
 
     # Install dependencies
     pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
-    # pip install numpy pandas gensim scipy scikit-learn sklearn_crfsuite nltk matplotlib seaborn tqdm
+    # pip install numpy pandas gensim scipy scikit-learn sklearn_crfsuite nltk matplotlib seaborn tqdm transformers datasets
     pip install -r requirements.txt
 ```
 
