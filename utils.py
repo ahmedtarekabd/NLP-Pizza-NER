@@ -18,6 +18,15 @@ types = Literal["model", "feature", "processed"]
 def file_exists(path):
     return os.path.exists(path)
 
+def add_to_path(path: str, type: types | None = None):
+    if type is not None:
+        if type == "model":
+            path = MODELS_PATH + "/" + path
+        elif type == "feature":
+            path = FEATURES_PATH + "/" + path
+        elif type == "processed":
+            path = PROCESSED_DATA_PATH + "/" + path
+    return path
 
 #* Memory Management & Performance
 def memory_usage():
@@ -26,49 +35,46 @@ def memory_usage():
 
 
 #* Save & Load functions
-def save_pickle(path, obj, type: types | None = None):
-    if type is not None:
-        if type == "model":
-            path = MODELS_PATH + "/" + path
-        elif type == "feature":
-            path = FEATURES_PATH + "/" + path
-        elif type == "processed":
-            path = PROCESSED_DATA_PATH + "/" + path
+def save_pickle(path: str, obj, type: types | None = None):
+    path = add_to_path(path, type)
     with open (path, 'wb') as f:
         pickle.dump(obj, f)
 
-def load_pickle(path, type: types | None = None):
-    if type is not None:
-        if type == "model":
-            path = MODELS_PATH + "/" + path
-        elif type == "feature":
-            path = FEATURES_PATH + "/" + path
-        elif type == "processed":
-            path = PROCESSED_DATA_PATH + "/" + path
+def load_pickle(path: str, type: types | None = None):
+    path = add_to_path(path, type)
     with open(path, 'rb') as f:
         return pickle.load(f)
     
-def save_np(path, obj, type: types | None = None, allow_pickle=True):
-    if type is not None:
-        if type == "model":
-            path = MODELS_PATH + "/" + path
-        elif type == "feature":
-            path = FEATURES_PATH + "/" + path
-        elif type == "processed":
-            path = PROCESSED_DATA_PATH + "/" + path
-            
+def save_parquet(path: str, obj, type: types | None = None):
+    path = add_to_path(path, type)
+    obj.to_parquet(path, engine='pyarrow', compression='snappy')
+
+def load_parquet(path: str, type: types | None = None):
+    path = add_to_path(path, type)
+    return pd.read_parquet(path, engine='pyarrow')
+    
+def save_np(path: str, obj, type: types | None = None, allow_pickle=True):
+    path = add_to_path(path, type)
     np.save(path, obj, allow_pickle=allow_pickle)
 
-def load_np(path, type: types | None = None, allow_pickle=True):
-    if type is not None:
-        if type == "model":
-            path = MODELS_PATH + "/" + path
-        elif type == "feature":
-            path = FEATURES_PATH + "/" + path
-        elif type == "processed":
-            path = PROCESSED_DATA_PATH + "/" + path
-
+def load_np(path: str, type: types | None = None, allow_pickle=True):
+    path = add_to_path(path, type)
     return np.load(path, allow_pickle=allow_pickle)
+
+def save_dict_to_json(path: str, obj, type: types | None = None):
+    path = add_to_path(path, type)
+    # Convert ndarray to list
+    for key, value in obj.items():
+        if isinstance(value, np.ndarray):
+            obj[key] = value.tolist()
+
+    with open(path, 'w') as f:
+        json.dump(obj, f)
+
+def load_json_to_dict(path: str, type: types | None = None):
+    path = add_to_path(path, type)
+    with open(path, 'r') as f:
+        return json.load(f)
 
 def load_json(filename: str, cols: list[str] | None = None):
     """
